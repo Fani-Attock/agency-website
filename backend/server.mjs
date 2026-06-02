@@ -12,7 +12,7 @@ console.log('API Key loaded:', process.env.GEMINI_API_KEY ? 'YES' : 'NO')
 const app = express()
 
 app.use(cors({
-  origin: "http://localhost:5173"
+  origin: "http://localhost:5174"
 }))
 
 app.use(express.json())
