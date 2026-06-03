@@ -31,7 +31,7 @@ export default function App() {
     { role: "ai", text: "Ask NeuraFlow AI about automation, leads, or workflow strategy." },
   ]);
   const [chatInput, setChatInput] = useState("");
-  const chatApiUrl = import.meta.env.VITE_CHAT_API_URL || "http://localhost:5000/api/chat";
+  const chatApiUrl = "https://neuraflow.vercel.app/api/chat";
   const [showExitModal, setShowExitModal] = useState(false);
   const carouselRef = useRef(null);
   const testimonialRef = useRef(null);
@@ -289,10 +289,12 @@ export default function App() {
 
     try {
       const response = await fetch(chatApiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMessage }),
-      });
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ message }),
+});
 
       const data = await response.json();
       const replyText = data.reply || "NeuraFlow AI did not return a response.";
