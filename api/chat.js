@@ -18,12 +18,16 @@ export default async function handler(req, res) {
   }
 
   try {
-    const message = req.body?.message;
+    // ✅ GET MESSAGE FROM FRONTEND
+    const { message } = req.body;
 
     if (!message) {
-      return res.status(400).json({ reply: "Message missing" });
+      return res.status(400).json({
+        reply: "Message is required",
+      });
     }
 
+    // ✅ GEMINI CALL
     const result = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: message,

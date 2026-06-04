@@ -288,14 +288,17 @@ const [showExitModal, setShowExitModal] = useState(false);
     setChatMessages((prev) => [...prev, { role: "user", text: userMessage }]);
     setChatInput("");
 
+    // Isko aapne replace karna hai (purani lines hata kar yeh lagayein)
     try {
       const response = await fetch(chatApiUrl, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({ message }),
-});
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ 
+          message: userMessage 
+        }),
+      });
 
       const data = await response.json();
       const replyText = data.reply || "NeuraFlow AI did not return a response.";
@@ -311,7 +314,7 @@ const [showExitModal, setShowExitModal] = useState(false);
         { role: "ai", text: "Error connecting to the NeuraFlow AI backend. Please make sure the server is running." },
       ]);
     }
-  };
+  }; 
 
   // Small counter component (lightweight, no extra deps)
   const Counter = ({ end = 100, label = "" }) => {
