@@ -1,20 +1,30 @@
 import { GoogleGenAI } from "@google/genai";
 
 export default async function handler(req, res) {
-  // 🔥 FORCE CORS (VERY IMPORTANT)
-  res.setHeader("Access-Control-Allow-Origin", "https://neuraflowai.vercel.app");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  const setCors = () => {
+    res.setHeader("Access-Control-Allow-Origin", "https://neuraflowai.vercel.app");
+    res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  };
+
+  setCors();
 
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
 
+  if (req.method !== "POST") {
+    return res.status(405).json({ reply: "Method not allowed" });
+  }
+
   try {
-    const message = req.body?.message;
+    const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+    const message = body?.message;
 
     if (!message) {
-      return res.status(200).json({ reply: "No message received" });
+      return res.status(200).json({
+        reply: "Message missing"
+      });
     }
 
     const ai = new GoogleGenAI({
@@ -23,15 +33,28 @@ export default async function handler(req, res) {
 
     const result = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: [{ role: "user", parts: [{ text: message }] }],
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: message }],
+        },
+      ],
     });
+
+    const botReply =
+      result?.response?.text?.() ||
+      result?.text ||
+      "No response";
 
     return res.status(200).json({
-      reply: result.text || "No response"
+      reply: botReply
     });
 
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ reply: "Server error" });
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      reply: "Server error: " + err.message
+    });
   }
 }
