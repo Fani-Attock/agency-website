@@ -5,12 +5,12 @@ const ai = new GoogleGenAI({
 });
 
 export default async function handler(req, res) {
-  // ✅ CORS HEADERS (IMPORTANT)
+  // ✅ MUST be first
   res.setHeader("Access-Control-Allow-Origin", "https://neuraflowai.vercel.app");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  // ✅ Handle preflight request
+  // ✅ Preflight request handling (THIS IS CRITICAL)
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
@@ -27,11 +27,11 @@ export default async function handler(req, res) {
       contents: `User: ${message}`,
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       reply: result.text || "No response",
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       reply: error.message,
     });
   }
