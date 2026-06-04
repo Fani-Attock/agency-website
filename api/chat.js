@@ -5,56 +5,38 @@ const ai = new GoogleGenAI({
 });
 
 export default async function handler(req, res) {
-  // Allow only POST requests
+  // ✅ CORS HEADERS (IMPORTANT FIX)
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  // ✅ Handle preflight request
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
   if (req.method !== "POST") {
-    return res.status(405).json({
-      reply: "Only POST requests are allowed",
-    });
+    return res.status(405).json({ reply: "Only POST allowed" });
   }
 
   try {
     const { message } = req.body;
 
-    // Validation
     if (!message) {
-      return res.status(400).json({
-        reply: "Message is required",
-      });
+      return res.status(400).json({ reply: "Message required" });
     }
 
-    // System prompt (you can customize)
-    const systemPrompt = `
-You are NeuraFlow AI assistant.
-You are a helpful, professional AI for an agency website.
-
-Services:
-- AI Automation
-- Machine Learning
-- Deep Learning
-- Computer Vision
-- AI SaaS Development
-
-Rules:
-- Keep answers short and clear
-- Be professional
-`;
-
-    // Call Gemini AI
     const result = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: `${systemPrompt}\n\nUser: ${message}`,
+      contents: `User: ${message}`,
     });
 
-    // Response handling
-    const reply =
-      result.text || "Sorry, I could not generate a response.";
-
     return res.status(200).json({
-      reply,
+      reply: result.text || "No response",
     });
 
   } catch (error) {
-    console.error("Chat API Error:", error);
+    console.error(error);
 
     return res.status(500).json({
       reply: "Server error: " + error.message,
