@@ -1,38 +1,42 @@
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-});
-
 export default async function handler(req, res) {
-  // ✅ MUST be first
-  res.setHeader("Access-Control-Allow-Origin", "https://neuraflowai.vercel.app");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-
-  // ✅ Preflight request handling (THIS IS CRITICAL)
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
-
-  if (req.method !== "POST") {
-    return res.status(405).json({ reply: "Only POST allowed" });
-  }
-
   try {
-    const { message } = req.body;
+    if (req.method === "OPTIONS") {
+      return res.status(200).end();
+    }
+
+    const ai = new GoogleGenAI({
+      apiKey: process.env.GEMINI_API_KEY,
+    });
+
+    const message = req.body?.message;
+
+    if (!message) {
+      return res.status(200).json({
+        reply: "Mujhe aapka message nahi mila."
+      });
+    }
 
     const result = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: `User: ${message}`,
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: message }],
+        },
+      ],
     });
 
     return res.status(200).json({
-      reply: result.text || "No response",
+      reply: result.text || "No response"
     });
+
   } catch (error) {
+    console.error(error);
+
     return res.status(500).json({
-      reply: error.message,
+      reply: "Server error"
     });
   }
 }
