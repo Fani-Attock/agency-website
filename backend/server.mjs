@@ -3,13 +3,16 @@ import cors from "cors";
 import { GoogleGenAI } from "@google/genai";
 
 const app = express();
+app.options("*", cors());
 
 // ✅ CORS
 app.use(cors({
   origin: "https://neuraflowai.vercel.app",
   methods: ["GET", "POST", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
+app.options("*", cors());
 
 app.use(express.json());
 
