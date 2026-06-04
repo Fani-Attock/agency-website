@@ -31,7 +31,8 @@ export default function App() {
     { role: "ai", text: "Ask NeuraFlow AI about automation, leads, or workflow strategy." },
   ]);
   const [chatInput, setChatInput] = useState("");
-const chatApiUrl = "https://agency-website-jvxl.vercel.app/api/chat";
+ const chatApiUrl = "https://agency-website-jvxl.vercel.app/api/chat";
+
 const [showExitModal, setShowExitModal] = useState(false);
   const carouselRef = useRef(null);
   const testimonialRef = useRef(null);
