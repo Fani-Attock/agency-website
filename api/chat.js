@@ -5,12 +5,11 @@ const ai = new GoogleGenAI({
 });
 
 export default async function handler(req, res) {
-  // ✅ CORS HEADERS (IMPORTANT FIX)
+  // IMPORTANT: CORS FIRST
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  // ✅ Handle preflight request
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
@@ -36,10 +35,8 @@ export default async function handler(req, res) {
     });
 
   } catch (error) {
-    console.error(error);
-
     return res.status(500).json({
-      reply: "Server error: " + error.message,
+      reply: error.message,
     });
   }
 }
