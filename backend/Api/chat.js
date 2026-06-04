@@ -1,7 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 
 export default async function handler(req, res) {
-  // 🔥 MUST for CORS
+  // 🔥 FORCE CORS (VERY IMPORTANT)
   res.setHeader("Access-Control-Allow-Origin", "https://neuraflowai.vercel.app");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -14,9 +14,7 @@ export default async function handler(req, res) {
     const message = req.body?.message;
 
     if (!message) {
-      return res.status(200).json({
-        reply: "Message missing"
-      });
+      return res.status(200).json({ reply: "No message received" });
     }
 
     const ai = new GoogleGenAI({
@@ -25,12 +23,7 @@ export default async function handler(req, res) {
 
     const result = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: [
-        {
-          role: "user",
-          parts: [{ text: message }],
-        },
-      ],
+      contents: [{ role: "user", parts: [{ text: message }] }],
     });
 
     return res.status(200).json({
@@ -39,9 +32,6 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error(error);
-
-    return res.status(500).json({
-      reply: "Server error"
-    });
+    return res.status(500).json({ reply: "Server error" });
   }
 }
