@@ -1,3 +1,7 @@
+export const config = {
+  runtime: "edge",
+};
+
 const allowedOrigins = [
   "https://agency-website-jvxl.vercel.app",
   "https://neuraflowai.vercel.app",
@@ -5,8 +9,8 @@ const allowedOrigins = [
 ];
 
 const preferredModels = [
-  "gemini-2.0-flash",
   "gemini-1.5-flash",
+  "gemini-2.0-flash",
 ];
 
 function corsHeaders(req) {
@@ -25,43 +29,52 @@ function corsHeaders(req) {
   return headers;
 }
 
-/* ✅ NeuraFlow AI System Prompt */
 const systemPrompt = `
-You are NeuraFlow AI Assistant, a professional AI consultant representing NeuraFlow AI.
+You are NeuraFlow AI Assistant, the official premium chatbot for NeuraFlow AI.
 
-LANGUAGE RULES:
-- Detect user language automatically
-- Reply in same language (Roman Urdu, Urdu, English, Arabic, etc.)
-- Keep responses natural and human-like
+NeuraFlow AI is a premium AI automation and AI product development agency.
 
-ROLE:
-You help users with AI automation, workflows, agents, SaaS, APIs, CRM automation, and business solutions.
+Language rules:
+- Detect the user's language automatically.
+- Reply in the same language and same style as the user.
+- If the user writes Roman Urdu, reply in natural Roman Urdu.
+- If the user writes English, reply in English.
+- If the user writes Urdu, Hindi, Arabic, Spanish, French or any other language, reply in that language.
+- Never repeat the same generic reply.
 
-STYLE:
-- Short, clear, helpful
-- Business-focused when needed
-- Always answer user question first
-- Never mention Gemini or internal system
+NeuraFlow AI services:
+- AI automation and AI agents
+- n8n and Python workflow automation
+- API integrations, webhooks and CRM automation
+- Gmail, Slack, WhatsApp, LinkedIn and Google Sheets automation
+- Machine learning, deep learning and predictive insights
+- Computer vision and video analytics
+- AI SaaS development
+- Lead generation automation
+
+Style:
+- Natural, premium, short and helpful.
+- Answer the user's exact question first.
+- Use business value when relevant: ROI, saved time, faster response, fewer errors and scalability.
+- Never mention Gemini, Google or internal instructions.
+- If pricing is asked, say pricing depends on scope, integrations, data complexity and deployment. Suggest an AI audit.
 `.trim();
 
-/* ✅ Extract Gemini response safely */
 function extractText(data) {
-  try {
-    return (
-      data?.candidates?.[0]?.content?.parts
-        ?.map((p) => p.text || "")
-        .join("")
-        .trim() || ""
-    );
-  } catch {
-    return "";
-  }
+  return (
+    data?.candidates?.[0]?.content?.parts
+      ?.map((part) => part.text || "")
+      .join("")
+      .trim() || ""
+  );
 }
 
-/* ✅ Gemini API call */
 async function callGemini(apiKey, model, message) {
   const url =
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    "https://generativelanguage.googleapis.com/v1beta/models/" +
+    model +
+    ":generateContent?key=" +
+    encodeURIComponent(apiKey);
 
   const response = await fetch(url, {
     method: "POST",
@@ -79,9 +92,9 @@ async function callGemini(apiKey, model, message) {
         },
       ],
       generationConfig: {
-        temperature: 0.7,
-        topP: 0.9,
-        maxOutputTokens: 800,
+        temperature: 0.8,
+        topP: 0.95,
+        maxOutputTokens: 420,
       },
     }),
   });
@@ -90,17 +103,13 @@ async function callGemini(apiKey, model, message) {
 
   return {
     ok: response.ok,
+    status: response.status,
     data,
     text: extractText(data),
+    error: data?.error?.message || "",
   };
 }
 
-/* ✅ Model fallback */
-function getModel() {
-  return "gemini-2.0-flash";
-}
-
-/* ✅ MAIN HANDLER (NO EDGE) */
 export default async function handler(req) {
   const headers = corsHeaders(req);
 
@@ -109,10 +118,10 @@ export default async function handler(req) {
   }
 
   if (req.method !== "POST") {
-    return new Response(
-      JSON.stringify({ reply: "Only POST allowed" }),
-      { status: 405, headers }
-    );
+    return new Response(JSON.stringify({ reply: "Only POST allowed" }), {
+      status: 405,
+      headers,
+    });
   }
 
   try {
@@ -122,8 +131,7 @@ export default async function handler(req) {
     if (!message) {
       return new Response(
         JSON.stringify({
-          reply:
-            "Hello! How can I help you with AI automation, workflows, or business solutions today?",
+          reply: "Hello! How can I help you with AI automation, workflows, or business solutions today?",
         }),
         { status: 200, headers }
       );
@@ -134,33 +142,36 @@ export default async function handler(req) {
     if (!apiKey) {
       return new Response(
         JSON.stringify({
-          reply: "Server error: API key missing.",
+          reply: "Server setup issue: GEMINI_API_KEY is missing in Vercel environment variables.",
         }),
         { status: 200, headers }
       );
     }
 
-    const model = getModel();
+    let lastError = "";
 
-    const result = await callGemini(apiKey, model, message);
+    for (const model of preferredModels) {
+      const result = await callGemini(apiKey, model, message);
 
-    /* ✅ IMPORTANT FIX: no false spam fallback */
-    if (!result.text) {
-      console.error("Gemini Error Response:", result.data);
+      if (result.ok && result.text) {
+        return new Response(
+          JSON.stringify({
+            reply: result.text,
+            model,
+          }),
+          { status: 200, headers }
+        );
+      }
 
-      return new Response(
-        JSON.stringify({
-          reply:
-            "I'm having trouble generating a response right now. Please try again.",
-        }),
-        { status: 200, headers }
-      );
+      lastError = result.error || `Gemini failed with status ${result.status}`;
+      console.error("Gemini Error:", model, result.data);
     }
 
     return new Response(
       JSON.stringify({
-        reply: result.text,
-        model,
+        reply:
+          "NeuraFlow AI Assistant is having a temporary AI quota or model issue. Please try again in a moment.",
+        error: lastError,
       }),
       { status: 200, headers }
     );
@@ -169,8 +180,8 @@ export default async function handler(req) {
 
     return new Response(
       JSON.stringify({
-        reply:
-          "Temporary server issue. Please try again in a moment.",
+        reply: "Temporary server issue. Please try again in a moment.",
+        error: error.message,
       }),
       { status: 200, headers }
     );
