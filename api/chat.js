@@ -21,11 +21,13 @@ export default async function handler(req, res) {
     const result = await model.generateContent(message);
     const response = await result.response;
 
-    res.status(200).json({
+    return res.status(200).json({
       reply: response.text(),
     });
 
   } catch (err) {
-    res.status(500).json({ reply: err.message });
+    return res.status(500).json({
+      reply: err.message,
+    });
   }
 }
