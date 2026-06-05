@@ -169,9 +169,8 @@ export default async function handler(req) {
 
     return new Response(
       JSON.stringify({
-        reply:
-          "NeuraFlow AI Assistant is having a temporary AI quota or model issue. Please try again in a moment.",
-        error: lastError,
+       reply: "Gemini error: " + lastError,
+error: lastError,
       }),
       { status: 200, headers }
     );
