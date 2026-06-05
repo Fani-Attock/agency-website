@@ -1,12 +1,20 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+const allowedOrigins = [
+  "https://neuraflowai.vercel.app",
+  "http://localhost:5173",
+];
+
 export default async function handler(req, res) {
-  // ✅ CORS HEADERS (must be first)
- res.setHeader("Access-Control-Allow-Origin", "https://neuraflowai.vercel.app");
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  // ✅ Handle preflight request
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
@@ -16,18 +24,25 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { message } = req.body;
-
+    // 1. Check API Key inside the execution block
     if (!process.env.GEMINI_API_KEY) {
-      return res.status(500).json({ reply: "Missing API key" });
+      return res.status(500).json({ reply: "Missing API key on production server" });
     }
 
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+    const { message } = body;
 
+    if (!message) {
+      return res.status(400).json({ reply: "Message is required" });
+    }
+
+    // 2. Initialize Google AI safely inside the handler
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash",
     });
 
+    // 3. Generate content
     const result = await model.generateContent(message);
     const response = await result.response;
 
@@ -36,8 +51,11 @@ export default async function handler(req, res) {
     });
 
   } catch (err) {
+    console.error("Gemini Error:", err);
+
     return res.status(500).json({
-      reply: err.message,
+      reply: "AI request failed",
+      error_details: err.message // Is se agar koi aur masla hua to frontend pe dikh jaye ga
     });
   }
 }
