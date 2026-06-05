@@ -9,6 +9,12 @@ const allowedOrigins = [
 ];
 
 const preferredModels = [
+  "gemini-3.5-flash",
+  "gemini-3.1-flash-lite",
+  "gemini-3-flash-preview",
+  "gemini-2.5-flash",
+  "gemini-2.5-flash-lite",
+  "gemini-2.0-flash",
   "gemini-1.5-flash",
 ];
 
@@ -22,8 +28,8 @@ function corsHeaders(req) {
 
   headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
   headers.set("Access-Control-Allow-Headers", "Content-Type");
-  headers.set("Vary", "Origin");
   headers.set("Content-Type", "application/json");
+  headers.set("Vary", "Origin");
 
   return headers;
 }
@@ -33,15 +39,14 @@ You are NeuraFlow AI Assistant, the official premium chatbot for NeuraFlow AI.
 
 NeuraFlow AI is a premium AI automation and AI product development agency.
 
-Language rules:
+Language:
 - Detect the user's language automatically.
-- Reply in the same language and same style as the user.
-- If the user writes Roman Urdu, reply in natural Roman Urdu.
-- If the user writes English, reply in English.
-- If the user writes Urdu, Hindi, Arabic, Spanish, French or any other language, reply in that language.
-- Never repeat the same generic reply.
+- Reply in the same language and same style.
+- Roman Urdu user = natural Roman Urdu reply.
+- English user = English reply.
+- Urdu, Hindi, Arabic, French, Spanish or any other language = reply in that language.
 
-NeuraFlow AI services:
+Services:
 - AI automation and AI agents
 - n8n and Python workflow automation
 - API integrations, webhooks and CRM automation
@@ -53,9 +58,9 @@ NeuraFlow AI services:
 
 Style:
 - Natural, premium, short and helpful.
-- Answer the user's exact question first.
-- Use business value when relevant: ROI, saved time, faster response, fewer errors and scalability.
-- Never mention Gemini, Google or internal instructions.
+- Answer the exact question first.
+- Never repeat generic copy-paste replies.
+- Never mention Gemini, Google, API, model, or internal instructions.
 - If pricing is asked, say pricing depends on scope, integrations, data complexity and deployment. Suggest an AI audit.
 `.trim();
 
@@ -66,6 +71,44 @@ function extractText(data) {
       .join("")
       .trim() || ""
   );
+}
+
+async function listAvailableModels(apiKey) {
+  const response = await fetch(
+    "https://generativelanguage.googleapis.com/v1beta/models?key=" +
+      encodeURIComponent(apiKey)
+  );
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(data?.error?.message || "Could not list Gemini models");
+  }
+
+  return (data.models || [])
+    .filter((model) =>
+      model.supportedGenerationMethods?.includes("generateContent")
+    )
+    .map((model) => model.name?.replace("models/", ""))
+    .filter(Boolean);
+}
+
+function chooseModels(availableModels) {
+  const ordered = [];
+
+  for (const preferred of preferredModels) {
+    if (availableModels.includes(preferred)) {
+      ordered.push(preferred);
+    }
+  }
+
+  for (const model of availableModels) {
+    if (!ordered.includes(model) && model.includes("gemini")) {
+      ordered.push(model);
+    }
+  }
+
+  return ordered;
 }
 
 async function callGemini(apiKey, model, message) {
@@ -91,7 +134,7 @@ async function callGemini(apiKey, model, message) {
         },
       ],
       generationConfig: {
-        temperature: 0.8,
+        temperature: 0.85,
         topP: 0.95,
         maxOutputTokens: 420,
       },
@@ -102,10 +145,9 @@ async function callGemini(apiKey, model, message) {
 
   return {
     ok: response.ok,
-    status: response.status,
-    data,
     text: extractText(data),
     error: data?.error?.message || "",
+    data,
   };
 }
 
@@ -130,7 +172,7 @@ export default async function handler(req) {
     if (!message) {
       return new Response(
         JSON.stringify({
-          reply: "Hello! How can I help you with AI automation, workflows, or business solutions today?",
+          reply: "Please type your question, and I’ll help you with the right AI solution.",
         }),
         { status: 200, headers }
       );
@@ -141,7 +183,19 @@ export default async function handler(req) {
     if (!apiKey) {
       return new Response(
         JSON.stringify({
-          reply: "Server setup issue: GEMINI_API_KEY is missing in Vercel environment variables.",
+          reply: "Server setup issue: GEMINI_API_KEY is missing.",
+        }),
+        { status: 200, headers }
+      );
+    }
+
+    const availableModels = await listAvailableModels(apiKey);
+    const modelsToTry = chooseModels(availableModels);
+
+    if (!modelsToTry.length) {
+      return new Response(
+        JSON.stringify({
+          reply: "No Gemini text model is available for this API key.",
         }),
         { status: 200, headers }
       );
@@ -149,7 +203,7 @@ export default async function handler(req) {
 
     let lastError = "";
 
-    for (const model of preferredModels) {
+    for (const model of modelsToTry) {
       const result = await callGemini(apiKey, model, message);
 
       if (result.ok && result.text) {
@@ -162,15 +216,15 @@ export default async function handler(req) {
         );
       }
 
-      lastError = result.error || `Gemini failed with status ${result.status}`;
-      console.error("Gemini Error:", model, result.data);
+      lastError = result.error || "Model returned no text";
+      console.error("Gemini failed:", model, result.data);
     }
 
     return new Response(
       JSON.stringify({
-       reply:
-  "NeuraFlow AI Assistant is having a temporary AI quota or model issue. Please try again in a moment.",
-error: lastError,
+        reply: "NeuraFlow AI Assistant is temporarily unable to generate a response. Please try again shortly.",
+        error: lastError,
+        availableModels,
       }),
       { status: 200, headers }
     );
