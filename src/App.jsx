@@ -31,7 +31,7 @@ export default function App() {
     { role: "ai", text: "Ask NeuraFlow AI about automation, leads, or workflow strategy." },
   ]);
   const [chatInput, setChatInput] = useState("");
- const chatApiUrl = "https://agency-website-jvxl.vercel.app/api/chat";
+const chatApiUrl = "/api/chat";
 
 const [showExitModal, setShowExitModal] = useState(false);
   const carouselRef = useRef(null);
@@ -280,41 +280,51 @@ const [showExitModal, setShowExitModal] = useState(false);
     setRoiResult({ employees, hours, tickets, savings });
   };
 
-  const handleChatSubmit = async (e) => {
-    e.preventDefault();
-    if (!chatInput.trim()) return;
+const handleChatSubmit = async (e) => {
+  e.preventDefault();
+  if (!chatInput.trim()) return;
 
-    const userMessage = chatInput.trim();
-    setChatMessages((prev) => [...prev, { role: "user", text: userMessage }]);
-    setChatInput("");
+  const userMessage = chatInput.trim();
+  setChatMessages((prev) => [...prev, { role: "user", text: userMessage }]);
+  setChatInput("");
 
-    // Isko aapne replace karna hai (purani lines hata kar yeh lagayein)
-    try {
-      const response = await fetch(chatApiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ 
-          message: userMessage 
-        }),
-      });
+  try {
+    const response = await fetch(chatApiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: userMessage,
+      }),
+    });
 
-      const data = await response.json();
-      const replyText = data.reply || "NeuraFlow AI did not return a response.";
+    const data = await response.json().catch(() => ({}));
 
-      setChatMessages((prev) => [
-        ...prev,
-        { role: "ai", text: replyText },
-      ]);
-    } catch (error) {
-      console.error("Chat API error:", error);
-      setChatMessages((prev) => [
-        ...prev,
-        { role: "ai", text: "Error connecting to the NeuraFlow AI backend. Please make sure the server is running." },
-      ]);
+    if (!response.ok) {
+      throw new Error(data.error || `Chat API failed with status ${response.status}`);
     }
-  }; 
+
+    const replyText =
+      data.reply ||
+      data.message ||
+      "NeuraFlow AI did not return a response.";
+
+    setChatMessages((prev) => [
+      ...prev,
+      { role: "ai", text: replyText },
+    ]);
+  } catch (error) {
+    console.error("Chat API error:", error);
+    setChatMessages((prev) => [
+      ...prev,
+      {
+        role: "ai",
+        text: "Sorry, NeuraFlow AI is temporarily unavailable. Please try again shortly.",
+      },
+    ]);
+  }
+};
 
   // Small counter component (lightweight, no extra deps)
   const Counter = ({ end = 100, label = "" }) => {
