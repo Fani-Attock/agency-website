@@ -10,7 +10,6 @@ const allowedOrigins = [
 
 const preferredModels = [
   "gemini-1.5-flash",
-  "gemini-2.0-flash",
 ];
 
 function corsHeaders(req) {
@@ -169,7 +168,8 @@ export default async function handler(req) {
 
     return new Response(
       JSON.stringify({
-       reply: "Gemini error: " + lastError,
+       reply:
+  "NeuraFlow AI Assistant is having a temporary AI quota or model issue. Please try again in a moment.",
 error: lastError,
       }),
       { status: 200, headers }
