@@ -1,61 +1,60 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+export const config = {
+  runtime: 'edge', // Vercel par super-fast aur error-free execution ke liye
+};
+
 const allowedOrigins = [
   "https://neuraflowai.vercel.app",
   "http://localhost:5173",
 ];
 
-export default async function handler(req, res) {
-  const origin = req.headers.origin;
+export default async function handler(req) {
+  const origin = req.headers.get("origin");
+  const headers = new Headers();
 
   if (allowedOrigins.includes(origin)) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
+    headers.set("Access-Control-Allow-Origin", origin);
   }
+  headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+  headers.set("Access-Control-Allow-Headers", "Content-Type");
 
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-
+  // Handle CORS Preflight
   if (req.method === "OPTIONS") {
-    return res.status(200).end();
+    return new Response(null, { status: 200, headers });
   }
 
   if (req.method !== "POST") {
-    return res.status(405).json({ reply: "Only POST allowed" });
+    return new Response(JSON.stringify({ reply: "Only POST allowed" }), { status: 405, headers });
   }
 
   try {
-    // 1. Check API Key inside the execution block
-    if (!process.env.GEMINI_API_KEY) {
-      return res.status(500).json({ reply: "Missing API key on production server" });
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return new Response(JSON.stringify({ reply: "Missing API key on server" }), { status: 500, headers });
     }
 
-    const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+    const body = await req.json();
     const { message } = body;
 
     if (!message) {
-      return res.status(400).json({ reply: "Message is required" });
+      return new Response(JSON.stringify({ reply: "Message is required" }), { status: 400, headers });
     }
 
-    // 2. Initialize Google AI safely inside the handler
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
-    });
+    // Initialize Gemini safely inside execution
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    // 3. Generate content
     const result = await model.generateContent(message);
     const response = await result.response;
+    const text = response.text();
 
-    return res.status(200).json({
-      reply: response.text(),
-    });
+    headers.set("Content-Type", "application/json");
+    return new Response(JSON.stringify({ reply: text }), { status: 200, headers });
 
   } catch (err) {
-    console.error("Gemini Error:", err);
-
-    return res.status(500).json({
-      reply: "AI request failed",
-      error_details: err.message // Is se agar koi aur masla hua to frontend pe dikh jaye ga
-    });
+    console.error("Gemini Edge Error:", err);
+    headers.set("Content-Type", "application/json");
+    return new Response(JSON.stringify({ reply: "AI request failed", error: err.message }), { status: 500, headers });
   }
 }
