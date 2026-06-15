@@ -1179,7 +1179,7 @@ const handleChatSubmit = async (e) => {
     workflow automation, and scalable business solutions.
   </p>
 
-  {/* Top Featured Slider Media Container (As per your request, strictly original video/image slider) */}
+  {/* Top Featured Slider Media Container */}
   <div className="mx-auto mb-12 max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-black/40">
     {featuredProjects[0].videoSrc ? (
       <video
@@ -1276,20 +1276,16 @@ const handleChatSubmit = async (e) => {
                 View Project
               </button>
 
-              {/* Conditional Rendering: Checks if the card belongs to Wheat Anomaly System */}
+              {/* Live Demo Link: Opens in a fresh clean new tab */}
               {(p.title && p.title.toLowerCase().includes("wheat")) && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    const element = document.getElementById("live-wheat-engine");
-                    if (element) {
-                      element.scrollIntoView({ behavior: "smooth", block: "start" });
-                    }
-                  }}
-                  className="inline-flex w-full items-center justify-center rounded-3xl border border-green-500/30 bg-green-500/10 px-5 py-4 text-sm font-semibold text-green-300 transition hover:bg-green-500/20"
+                <a
+                  href="https://fanikhan03-wheat-anomaly-detection.hf.space"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex w-full items-center justify-center rounded-3xl border border-green-500/30 bg-green-500/10 px-5 py-4 text-sm font-semibold text-green-300 transition hover:bg-green-500/20 text-center"
                 >
                   ⚡ Live Demo
-                </button>
+                </a>
               )}
             </div>
           </div>
@@ -1306,39 +1302,6 @@ const handleChatSubmit = async (e) => {
       ›
     </button>
   </div>
-
-  {/* =======================================================
-      🌾 DYNAMIC TARGET MODULE: WHEAT ANOMALY DETECTION INTERFACE
-     ======================================================= */}
-  <div 
-    id="live-wheat-engine" 
-    className="mx-auto mt-28 max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-[#050A12] p-4 shadow-2xl shadow-cyan-500/5 scroll-mt-24"
-  >
-    <div className="p-6 text-center lg:text-left lg:px-8">
-      <div className="inline-flex rounded-full border border-green-400/20 bg-green-400/10 px-3 py-1 text-xs uppercase tracking-[0.28em] text-green-300 mb-3">
-        ⚡ Live Production Engine
-      </div>
-      <h3 className="text-3xl font-black text-white">
-        Wheat Anomaly Detection Lab
-      </h3>
-      <p className="mt-2 text-gray-400 max-w-2xl text-sm">
-        Test the active deployment live. Upload your crop imagery to process metrics and verify production system diagnostics instantly.
-      </p>
-    </div>
-    
-    <div className="w-full overflow-hidden rounded-2xl border border-white/5 bg-black/50">
-      <iframe
-        src="https://fanikhan03-wheat-anomaly-detection.hf.space"
-        frameBorder="0"
-        width="100%"
-        height="900"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        className="w-full"
-      ></iframe>
-    </div>
-  </div>
-  {/* ======================================================= */}
 
 </section>
 
