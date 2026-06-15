@@ -1181,7 +1181,7 @@ const handleChatSubmit = async (e) => {
 
   {/* Top Featured Slider Media Container */}
   <div className="mx-auto mb-12 max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-black/40">
-    {featuredProjects[0].videoSrc ? (
+    {featuredProjects && featuredProjects[0]?.videoSrc ? (
       <video
         controls
         autoPlay
@@ -1191,7 +1191,7 @@ const handleChatSubmit = async (e) => {
         className="w-full h-full min-h-90 bg-black object-cover"
         src={featuredProjects[0].videoSrc}
       />
-    ) : featuredProjects[0].image ? (
+    ) : featuredProjects && featuredProjects[0]?.image ? (
       <>
         <img src={featuredProjects[0].image} alt={featuredProjects[0].title} className="w-full h-full min-h-90 object-cover" />
         <div className="p-8 bg-slate-950/80">
@@ -1217,7 +1217,7 @@ const handleChatSubmit = async (e) => {
   <div className="relative">
     <button
       type="button"
-      onClick={() => scrollCarousel(-1)}
+      onClick={() => scrollCarousel && scrollCarousel(-1)}
       className="absolute left-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/40 p-3 text-white shadow-md hover:bg-black/60"
       aria-label="Scroll left"
     >
@@ -1225,7 +1225,7 @@ const handleChatSubmit = async (e) => {
     </button>
 
     <div ref={carouselRef} className="no-scrollbar flex gap-8 overflow-x-auto pb-4 px-2 scroll-smooth snap-x snap-mandatory">
-      {featuredProjects.map((p, i) => (
+      {featuredProjects && featuredProjects.map((p, i) => (
         <motion.div
           data-project-card
           key={i}
@@ -1270,14 +1270,14 @@ const handleChatSubmit = async (e) => {
             <div className="flex flex-col gap-3">
               <button
                 type="button"
-                onClick={() => setActiveProject(p)}
+                onClick={() => setActiveProject && setActiveProject(p)}
                 className="inline-flex w-full items-center justify-center rounded-3xl bg-cyan-400 px-5 py-4 text-sm font-semibold text-black transition hover:bg-cyan-300"
               >
                 View Project
               </button>
 
-              {/* Live Demo Link: Opens in a fresh clean new tab */}
-              {(p.title && p.title.toLowerCase().includes("wheat")) && (
+              {/* Live Demo Link: Target new tab cleanly */}
+              {(p?.title && p.title.toLowerCase().includes("wheat")) && (
                 <a
                   href="https://fanikhan03-wheat-anomaly-detection.hf.space"
                   target="_blank"
@@ -1295,7 +1295,7 @@ const handleChatSubmit = async (e) => {
 
     <button
       type="button"
-      onClick={() => scrollCarousel(1)}
+      onClick={() => scrollCarousel && scrollCarousel(1)}
       className="absolute right-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/40 p-3 text-white shadow-md hover:bg-black/60"
       aria-label="Scroll right"
     >
@@ -1311,7 +1311,7 @@ const handleChatSubmit = async (e) => {
     <div className="relative w-full max-w-4xl overflow-hidden rounded-3xl border border-white/10 bg-slate-950/95 shadow-2xl my-8">
       <button
         type="button"
-        onClick={() => setActiveProject(null)}
+        onClick={() => setActiveProject && setActiveProject(null)}
         className="absolute right-4 top-4 inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 z-20"
       >
         ✕
@@ -1399,7 +1399,7 @@ const handleChatSubmit = async (e) => {
 
             <div className="flex gap-3 mt-2">
               <button onClick={scrollToContact} className="inline-flex items-center justify-center rounded-3xl bg-cyan-400 px-4 py-3 text-black font-bold">Book Audit</button>
-              <button onClick={() => setActiveProject(null)} className="inline-flex items-center justify-center rounded-3xl border border-white/10 px-4 py-3 text-white">Close</button>
+              <button onClick={() => setActiveProject && setActiveProject(null)} className="inline-flex items-center justify-center rounded-3xl border border-white/10 px-4 py-3 text-white">Close</button>
             </div>
           </div>
         </div>
