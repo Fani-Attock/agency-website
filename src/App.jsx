@@ -1165,141 +1165,174 @@ const handleChatSubmit = async (e) => {
 
       {/* ================= PORTFOLIO ================= */}
 
-      <section
-        id="portfolio"
-        className="max-w-7xl mx-auto px-6 py-28 relative z-10"
-      >
+<section
+  id="portfolio"
+  className="max-w-7xl mx-auto px-6 py-28 relative z-10"
+>
 
-        <h2 className="text-5xl md:text-6xl font-black text-center">
-          Featured <span className="text-cyan-400">Projects</span>
-        </h2>
+  <h2 className="text-5xl md:text-6xl font-black text-center">
+    Featured <span className="text-cyan-400">Projects</span>
+  </h2>
 
-        <p className="text-center text-gray-400 max-w-2xl mx-auto mt-6 mb-20">
-          Real-world AI products, intelligent systems,
-          workflow automation, and scalable business solutions.
-        </p>
+  <p className="text-center text-gray-400 max-w-2xl mx-auto mt-6 mb-20">
+    Real-world AI products, intelligent systems,
+    workflow automation, and scalable business solutions.
+  </p>
 
-        <div className="mx-auto mb-12 max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-black/40">
-          {featuredProjects[0].videoSrc ? (
-            <video
-              controls
-              autoPlay
-              muted
-              loop
-              playsInline
-              className="w-full h-full min-h-90 bg-black object-cover"
-              src={featuredProjects[0].videoSrc}
-            />
-          ) : featuredProjects[0].image ? (
-            <>
-              <img src={featuredProjects[0].image} alt={featuredProjects[0].title} className="w-full h-full min-h-90 object-cover" />
-              <div className="p-8 bg-slate-950/80">
-                <p className="text-xs uppercase tracking-[0.35em] text-cyan-300">
-                  Featured Project
-                </p>
-                <h3 className="mt-3 text-3xl font-black text-white">
-                  {featuredProjects[0].title}
-                </h3>
-                <p className="mt-4 text-gray-400 leading-relaxed">
-                  {featuredProjects[0].desc}
-                </p>
-              </div>
-            </>
-          ) : (
-            <div className="w-full h-full min-h-90 bg-black flex items-center justify-center text-gray-400">
-              <p className="p-6 text-center">No demo available — project image not set.</p>
-            </div>
-          )}
+  {/* =======================================================
+      🌾 LIVE INTERACTIVE MODULE: WHEAT ANOMALY DETECTION
+     ======================================================= */}
+  <div className="mx-auto mb-20 max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-[#050A12] p-4 shadow-2xl shadow-cyan-500/5">
+    <div className="p-6 text-center lg:text-left lg:px-8">
+      <div className="inline-flex rounded-full border border-green-400/20 bg-green-400/10 px-3 py-1 text-xs uppercase tracking-[0.28em] text-green-300 mb-3">
+        ⚡ Live Production Engine
+      </div>
+      <h3 className="text-3xl font-black text-white">
+        🌾 Wheat Anomaly Detection System
+      </h3>
+      <p className="mt-2 text-gray-400 max-w-2xl text-sm">
+        Upload crop imagery directly below to experience real-time computer vision analysis, health score metrics, and instant PDF diagnostic downloads.
+      </p>
+    </div>
+    
+    <div className="w-full overflow-hidden rounded-2xl border border-white/5 bg-black/50">
+      <iframe
+        src="https://fanikhan03-wheat-anomaly-detection.hf.space"
+        frameBorder="0"
+        width="100%"
+        height="900"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        className="w-full"
+      ></iframe>
+    </div>
+  </div>
+  {/* ======================================================= */}
+
+  {/* Top Featured Slider Media Container */}
+  <div className="mx-auto mb-12 max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-black/40">
+    {featuredProjects[0].videoSrc ? (
+      <video
+        controls
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="w-full h-full min-h-90 bg-black object-cover"
+        src={featuredProjects[0].videoSrc}
+      />
+    ) : featuredProjects[0].image ? (
+      <>
+        <img src={featuredProjects[0].image} alt={featuredProjects[0].title} className="w-full h-full min-h-90 object-cover" />
+        <div className="p-8 bg-slate-950/80">
+          <p className="text-xs uppercase tracking-[0.35em] text-cyan-300">
+            Featured Project
+          </p>
+          <h3 className="mt-3 text-3xl font-black text-white">
+            {featuredProjects[0].title}
+          </h3>
+          <p className="mt-4 text-gray-400 leading-relaxed">
+            {featuredProjects[0].desc}
+          </p>
         </div>
+      </>
+    ) : (
+      <div className="w-full h-full min-h-90 bg-black flex items-center justify-center text-gray-400">
+        <p className="p-6 text-center">No demo available — project image not set.</p>
+      </div>
+    )}
+  </div>
 
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => scrollCarousel(-1)}
-            className="absolute left-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/40 p-3 text-white shadow-md hover:bg-black/60"
-            aria-label="Scroll left"
-          >
-            ‹
-          </button>
+  {/* Carousel Wrapper */}
+  <div className="relative">
+    <button
+      type="button"
+      onClick={() => scrollCarousel(-1)}
+      className="absolute left-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/40 p-3 text-white shadow-md hover:bg-black/60"
+      aria-label="Scroll left"
+    >
+      ‹
+    </button>
 
-          <div ref={carouselRef} className="no-scrollbar flex gap-8 overflow-x-auto pb-4 px-2 scroll-smooth snap-x snap-mandatory">
-            {featuredProjects.map((p, i) => (
-              <motion.div
-                data-project-card
-                key={i}
-                whileHover={{ y: -10 }}
-                className="snap-start flex-none w-[min(88vw,28rem)] group overflow-hidden rounded-4xl border border-white/10 bg-slate-950/80 shadow-2xl shadow-cyan-500/10 transition duration-500 hover:-translate-y-2 hover:border-cyan-400/40"
-              >
-                <div className="overflow-hidden bg-black/30">
-                  {p.image ? (
-                    <img
-                      src={p.image}
-                      alt={p.title}
-                      className="h-56 w-full object-cover"
-                    />
-                  ) : p.videoSrc ? (
-                    <video
-                      controls
-                      muted
-                      loop
-                      playsInline
-                      className="h-56 w-full object-cover"
-                      src={p.videoSrc}
-                    />
-                  ) : (
-                    <div className="flex h-56 items-center justify-center bg-white/5 text-gray-400">
-                      <span>No preview available</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="p-8">
-                  <div className="inline-flex rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs uppercase tracking-[0.28em] text-cyan-300 mb-4">
-                    {p.cat}
-                  </div>
-                  <h3 className="text-3xl font-black text-white mb-4">
-                    {p.title}
-                  </h3>
-                  <p className="text-gray-400 leading-relaxed mb-6">
-                    {p.desc}
-                  </p>
-                  {/* removed demo notes and production badge per request */}
-                  <button
-                    type="button"
-                    onClick={() => setActiveProject(p)}
-                    className="inline-flex w-full items-center justify-center rounded-3xl bg-cyan-400 px-5 py-4 text-sm font-semibold text-black transition hover:bg-cyan-300"
-                  >
-                    View Project
-                  </button>
-                </div>
-              </motion.div>
-            ))}
+    <div ref={carouselRef} className="no-scrollbar flex gap-8 overflow-x-auto pb-4 px-2 scroll-smooth snap-x snap-mandatory">
+      {featuredProjects.map((p, i) => (
+        <motion.div
+          data-project-card
+          key={i}
+          whileHover={{ y: -10 }}
+          className="snap-start flex-none w-[min(88vw,28rem)] group overflow-hidden rounded-4xl border border-white/10 bg-slate-950/80 shadow-2xl shadow-cyan-500/10 transition duration-500 hover:-translate-y-2 hover:border-cyan-400/40"
+        >
+          <div className="overflow-hidden bg-black/30">
+            {p.image ? (
+              <img
+                src={p.image}
+                alt={p.title}
+                className="h-56 w-full object-cover"
+              />
+            ) : p.videoSrc ? (
+              <video
+                controls
+                muted
+                loop
+                playsInline
+                className="h-56 w-full object-cover"
+                src={p.videoSrc}
+              />
+            ) : (
+              <div className="flex h-56 items-center justify-center bg-white/5 text-gray-400">
+                <span>No preview available</span>
+              </div>
+            )}
           </div>
 
-          <button
-            type="button"
-            onClick={() => scrollCarousel(1)}
-            className="absolute right-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/40 p-3 text-white shadow-md hover:bg-black/60"
-            aria-label="Scroll right"
-          >
-            ›
-          </button>
-        </div>
+          <div className="p-8">
+            <div className="inline-flex rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs uppercase tracking-[0.28em] text-cyan-300 mb-4">
+              {p.cat}
+            </div>
+            <h3 className="text-3xl font-black text-white mb-4">
+              {p.title}
+            </h3>
+            <p className="text-gray-400 leading-relaxed mb-6">
+              {p.desc}
+            </p>
+            <button
+              type="button"
+              onClick={() => setActiveProject(p)}
+              className="inline-flex w-full items-center justify-center rounded-3xl bg-cyan-400 px-5 py-4 text-sm font-semibold text-black transition hover:bg-cyan-300"
+            >
+              View Project
+            </button>
+          </div>
+        </motion.div>
+      ))}
+    </div>
 
-      </section>
+    <button
+      type="button"
+      onClick={() => scrollCarousel(1)}
+      className="absolute right-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/40 p-3 text-white shadow-md hover:bg-black/60"
+      aria-label="Scroll right"
+    >
+      ›
+    </button>
+  </div>
+
+</section>
+
+{/* Project Detail Pop-up Modal */}
 {activeProject && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-xl">
-    <div className="relative w-full max-w-4xl overflow-hidden rounded-3xl border border-white/10 bg-slate-950/95 shadow-2xl">
+  <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-xl overflow-y-auto">
+    <div className="relative w-full max-w-4xl overflow-hidden rounded-3xl border border-white/10 bg-slate-950/95 shadow-2xl my-8">
       <button
         type="button"
         onClick={() => setActiveProject(null)}
-        className="absolute right-4 top-4 inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+        className="absolute right-4 top-4 inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 z-20"
       >
         ✕
       </button>
 
       <div className="grid gap-8 lg:grid-cols-[1.4fr_0.8fr]">
-      <div className="bg-black/90 p-6">
+        <div className="bg-black/90 p-6">
           {activeProject.videoSrc ? (
             <video
               controls
@@ -1323,7 +1356,7 @@ const handleChatSubmit = async (e) => {
           )}
         </div>
 
-        <div className="p-6">
+        <div className="p-6 max-h-[80vh] overflow-y-auto no-scrollbar">
           <p className="text-xs uppercase tracking-[0.35em] text-cyan-300">{activeProject.cat}</p>
           <h3 className="mt-4 text-4xl font-black text-white">{activeProject.title}</h3>
           <p className="mt-6 text-gray-300 leading-relaxed">{activeProject.detail}</p>
@@ -1389,26 +1422,27 @@ const handleChatSubmit = async (e) => {
   </div>
 )}
 
-      <section className="max-w-7xl mx-auto px-6 py-20 relative z-10">
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-10 text-center backdrop-blur-xl">
-          <p className="text-sm uppercase tracking-[0.35em] text-cyan-300 mb-4">
-            Stay Ahead in AI
-          </p>
-          <h2 className="text-5xl md:text-6xl font-black text-white max-w-3xl mx-auto">
-            Subscribe for AI product, automation, and growth insights.
-          </h2>
-          <p className="mt-6 text-gray-400 max-w-2xl mx-auto leading-relaxed">
-            Get curated strategy notes and launch ideas for teams building AI-enabled platforms, digital products, and enterprise automation.
-          </p>
-          <button
-            type="button"
-            onClick={scrollToContact}
-            className="mt-10 inline-flex items-center justify-center rounded-3xl bg-cyan-400 px-10 py-4 text-black font-bold transition hover:bg-cyan-300 hover:scale-105"
-          >
-            Talk With AI Experts
-          </button>
-        </div>
-      </section>
+{/* Newsletter / Insights Subscription Section */}
+<section className="max-w-7xl mx-auto px-6 py-20 relative z-10">
+  <div className="rounded-3xl border border-white/10 bg-white/5 p-10 text-center backdrop-blur-xl">
+    <p className="text-sm uppercase tracking-[0.35em] text-cyan-300 mb-4">
+      Stay Ahead in AI
+    </p>
+    <h2 className="text-5xl md:text-6xl font-black text-white max-w-3xl mx-auto">
+      Subscribe for AI product, automation, and growth insights.
+    </h2>
+    <p className="mt-6 text-gray-400 max-w-2xl mx-auto leading-relaxed">
+      Get curated strategy notes and launch ideas for teams building AI-enabled platforms, digital products, and enterprise automation.
+    </p>
+    <button
+      type="button"
+      onClick={scrollToContact}
+      className="mt-10 inline-flex items-center justify-center rounded-3xl bg-cyan-400 px-10 py-4 text-black font-bold transition hover:bg-cyan-300 hover:scale-105"
+    >
+      Talk With AI Experts
+    </button>
+  </div>
+</section>
 
       {/* ================= FOOTER ================= */}
 
