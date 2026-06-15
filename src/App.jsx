@@ -6,7 +6,7 @@ import { loadFull } from "tsparticles";
 import nfLogo from "./assets/nf-logo.png";
 import heroImg from "./assets/hero.png";
 import smsImage from "./assets/project-images/sms-scam-detection.png";
-import wheatImage from "./assets/project-images/wheat-anomaly-detection.jpeg";
+import wheatImage from "./assets/project-images/wheat-anomaly-detection.png";
 import eAssistantImage from "./assets/project-images/e-assistant.png";
 import aiAgentImage from "./assets/project-images/ai-agent-platform.jpeg";
 import multiIndustryLeadImage from "./assets/project-images/MultiIndstry Lead.png";
