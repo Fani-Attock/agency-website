@@ -1164,12 +1164,10 @@ const handleChatSubmit = async (e) => {
       </section>
 
       {/* ================= PORTFOLIO ================= */}
-
 <section
   id="portfolio"
   className="max-w-7xl mx-auto px-6 py-28 relative z-10"
 >
-
   <h2 className="text-5xl md:text-6xl font-black text-center">
     Featured <span className="text-cyan-400">Projects</span>
   </h2>
@@ -1181,7 +1179,7 @@ const handleChatSubmit = async (e) => {
 
   {/* Top Featured Slider Media Container */}
   <div className="mx-auto mb-12 max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-black/40">
-    {featuredProjects && featuredProjects[0]?.videoSrc ? (
+    {typeof featuredProjects !== 'undefined' && featuredProjects?.[0]?.videoSrc ? (
       <video
         controls
         autoPlay
@@ -1191,7 +1189,7 @@ const handleChatSubmit = async (e) => {
         className="w-full h-full min-h-90 bg-black object-cover"
         src={featuredProjects[0].videoSrc}
       />
-    ) : featuredProjects && featuredProjects[0]?.image ? (
+    ) : typeof featuredProjects !== 'undefined' && featuredProjects?.[0]?.image ? (
       <>
         <img src={featuredProjects[0].image} alt={featuredProjects[0].title} className="w-full h-full min-h-90 object-cover" />
         <div className="p-8 bg-slate-950/80">
@@ -1217,19 +1215,17 @@ const handleChatSubmit = async (e) => {
   <div className="relative">
     <button
       type="button"
-      onClick={() => scrollCarousel && scrollCarousel(-1)}
+      onClick={() => typeof scrollCarousel === 'function' && scrollCarousel(-1)}
       className="absolute left-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/40 p-3 text-white shadow-md hover:bg-black/60"
       aria-label="Scroll left"
     >
       ‹
     </button>
 
-    <div ref={carouselRef} className="no-scrollbar flex gap-8 overflow-x-auto pb-4 px-2 scroll-smooth snap-x snap-mandatory">
-      {featuredProjects && featuredProjects.map((p, i) => (
-        <motion.div
-          data-project-card
+    <div ref={typeof carouselRef !== 'undefined' ? carouselRef : null} className="no-scrollbar flex gap-8 overflow-x-auto pb-4 px-2 scroll-smooth snap-x snap-mandatory">
+      {typeof featuredProjects !== 'undefined' && featuredProjects?.map((p, i) => (
+        <div
           key={i}
-          whileHover={{ y: -10 }}
           className="snap-start flex-none w-[min(88vw,28rem)] group overflow-hidden rounded-4xl border border-white/10 bg-slate-950/80 shadow-2xl shadow-cyan-500/10 transition duration-500 hover:-translate-y-2 hover:border-cyan-400/40"
         >
           <div className="overflow-hidden bg-black/30">
@@ -1270,14 +1266,14 @@ const handleChatSubmit = async (e) => {
             <div className="flex flex-col gap-3">
               <button
                 type="button"
-                onClick={() => setActiveProject && setActiveProject(p)}
+                onClick={() => typeof setActiveProject === 'function' && setActiveProject(p)}
                 className="inline-flex w-full items-center justify-center rounded-3xl bg-cyan-400 px-5 py-4 text-sm font-semibold text-black transition hover:bg-cyan-300"
               >
                 View Project
               </button>
 
-              {/* Live Demo Link: Target new tab cleanly */}
-              {(p?.title && p.title.toLowerCase().includes("wheat")) && (
+              {/* Live Demo Link: Pure clean browser-native link */}
+              {p?.title && p.title.toLowerCase().includes("wheat") && (
                 <a
                   href="https://fanikhan03-wheat-anomaly-detection.hf.space"
                   target="_blank"
@@ -1289,29 +1285,28 @@ const handleChatSubmit = async (e) => {
               )}
             </div>
           </div>
-        </motion.div>
+        </div>
       ))}
     </div>
 
     <button
       type="button"
-      onClick={() => scrollCarousel && scrollCarousel(1)}
+      onClick={() => typeof scrollCarousel === 'function' && scrollCarousel(1)}
       className="absolute right-0 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/40 p-3 text-white shadow-md hover:bg-black/60"
       aria-label="Scroll right"
     >
       ›
     </button>
   </div>
-
 </section>
 
 {/* Project Detail Pop-up Modal */}
-{activeProject && (
+{typeof activeProject !== 'undefined' && activeProject && (
   <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/80 backdrop-blur-xl overflow-y-auto">
     <div className="relative w-full max-w-4xl overflow-hidden rounded-3xl border border-white/10 bg-slate-950/95 shadow-2xl my-8">
       <button
         type="button"
-        onClick={() => setActiveProject && setActiveProject(null)}
+        onClick={() => typeof setActiveProject === 'function' && setActiveProject(null)}
         className="absolute right-4 top-4 inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 z-20"
       >
         ✕
@@ -1380,26 +1375,24 @@ const handleChatSubmit = async (e) => {
               </ul>
             </div>
 
-            {activeProject.screenshots && activeProject.screenshots.length > 0 && (
-              <div className="rounded-2xl bg-white/5 p-4 text-gray-300">
-                <strong>Media</strong>
-                <div className="mt-3 grid gap-3 grid-cols-1 sm:grid-cols-2">
-                  {activeProject.screenshots.map((src, i) => (
-                    <div key={i} className="rounded-lg overflow-hidden border border-white/6">
-                      {src.endsWith('.mp4') || src.endsWith('.webm') ? (
-                        <video src={src} controls className="w-full h-40 object-cover" />
-                      ) : (
-                        <img src={src} alt={`screenshot-${i}`} className="w-full h-40 object-cover" />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className="flex gap-3 mt-2">
-              <button onClick={scrollToContact} className="inline-flex items-center justify-center rounded-3xl bg-cyan-400 px-4 py-3 text-black font-bold">Book Audit</button>
-              <button onClick={() => setActiveProject && setActiveProject(null)} className="inline-flex items-center justify-center rounded-3xl border border-white/10 px-4 py-3 text-white">Close</button>
+            <div className="flex gap-3 mt-4">
+              <button 
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById('contact');
+                  if(el) el.scrollIntoView({ behavior: 'smooth' });
+                }} 
+                className="inline-flex items-center justify-center rounded-3xl bg-cyan-400 px-6 py-3 text-black font-bold"
+              >
+                Book Audit
+              </button>
+              <button 
+                type="button"
+                onClick={() => typeof setActiveProject === 'function' && setActiveProject(null)} 
+                className="inline-flex items-center justify-center rounded-3xl border border-white/10 px-6 py-3 text-white"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>
@@ -1407,28 +1400,6 @@ const handleChatSubmit = async (e) => {
     </div>
   </div>
 )}
-
-{/* Newsletter / Insights Subscription Section */}
-<section className="max-w-7xl mx-auto px-6 py-20 relative z-10">
-  <div className="rounded-3xl border border-white/10 bg-white/5 p-10 text-center backdrop-blur-xl">
-    <p className="text-sm uppercase tracking-[0.35em] text-cyan-300 mb-4">
-      Stay Ahead in AI
-    </p>
-    <h2 className="text-5xl md:text-6xl font-black text-white max-w-3xl mx-auto">
-      Subscribe for AI product, automation, and growth insights.
-    </h2>
-    <p className="mt-6 text-gray-400 max-w-2xl mx-auto leading-relaxed">
-      Get curated strategy notes and launch ideas for teams building AI-enabled platforms, digital products, and enterprise automation.
-    </p>
-    <button
-      type="button"
-      onClick={scrollToContact}
-      className="mt-10 inline-flex items-center justify-center rounded-3xl bg-cyan-400 px-10 py-4 text-black font-bold transition hover:bg-cyan-300 hover:scale-105"
-    >
-      Talk With AI Experts
-    </button>
-  </div>
-</section>
 
       {/* ================= FOOTER ================= */}
 
