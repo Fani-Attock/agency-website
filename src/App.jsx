@@ -1283,6 +1283,17 @@ const handleChatSubmit = async (e) => {
                   ⚡ Live Demo
                 </a>
               )}
+              {/* E-Assistant Live Demo */}
+              {p?.title && p.title.toLowerCase().includes("e-assistant") && (
+                 <a
+                  href="https://e-assistant-nh0fchp34-neuraflow-ai.vercel.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex w-full items-center justify-center rounded-3xl border border-green-500/30 bg-green-500/10 px-5 py-4 text-sm font-semibold text-green-300 transition hover:bg-green-500/20 text-center"
+               >
+                  ⚡ Live Demo
+                </a>
+)}
             </div>
           </div>
         </div>
